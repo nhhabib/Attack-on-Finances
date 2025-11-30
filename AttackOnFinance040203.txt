@@ -1,0 +1,263 @@
+#####################ATTACK ON FINANCE#################
+
+
+@Dhaka
+
+______________router___________________
+en
+config t
+int Fa0/0
+ip add 192.168.0.1 255.255.224.0
+no shut
+
+en
+config t
+int Se2/0
+ip add 20.0.0.2 255.255.255.252
+no shut
+exit
+int Se3/0
+ip add 30.0.0.1 255.255.255.252
+no shut
+exit
+int Fa1/0
+ip add 40.0.0.1 255.255.255.252
+no shut
+exit
+
+
+
+____________switch_____________________
+
+en
+config t
+vlan 2
+name duber
+exit
+vlan 3
+name uthao
+exit
+vlan 4
+name kharaz
+exit
+int Fa1/1
+switchport access vlan 2
+exit
+int Fa3/1
+switchport access vlan 2
+exit
+int Fa7/1
+switchport access vlan 3
+exit
+int Fa8/1
+switchport access vlan 3
+exit
+int Fa6/1
+switchport access vlan 4
+exit
+int Fa2/1
+switchport access vlan 4
+exit
+
+__________________routing____________
+
+en
+config t
+router ospf 1
+network 192.168.0.0 0.0.31.255 area 0
+network 20.0.0.0 0.0.0.3 area 0
+network 30.0.0.0 0.0.0.3 area 0
+network 40.0.0.0 0.0.0.3 area 0
+exit
+
+
+
+@Paris
+
+
+en
+config t
+int Fa0/0
+ip add 192.168.32.1 255.255.240.0
+no shut
+
+en
+config t
+int Fa1/0
+ip add 40.0.0.2 255.255.255.252
+no shut
+exit
+
+___________________routing__________________
+
+en
+config t
+router ospf 1
+network 192.168.32.0 0.0.15.255 area 0
+network 40.0.0.0 0.0.0.3 area 0
+exit
+
+
+
+@Tokyo
+
+en
+config t
+int Fa0/0
+ip add 192.168.48.1 255.255.252.0
+no shut
+ip dhcp pool Tokyo
+network 192.168.48.0 255.255.252.0
+default-router 192.168.48.1
+dns-server 192.168.48.38
+ip dhcp excluded-address 192.168.48.14 192.168.48.38
+
+en
+config t
+int Fa1/0
+ip add 50.0.0.2 255.255.255.252
+no shut
+exit
+______________________routing_____________________
+
+en
+config t
+router ospf 1
+network 192.168.48.0 0.0.3.255 area 0
+network 50.0.0.0 0.0.0.3 area 0
+exit
+
+
+
+
+@Bucharest
+
+en
+config t
+int Fa0/0
+ip add 192.168.52.1 255.255.252.0
+no shut
+
+en
+config t
+int Se2/0
+ip add 30.0.0.2 255.255.255.252
+no shut
+exit
+_______________________routing________________________
+
+
+en
+config t
+router ospf 1
+network 192.168.52.0 0.0.3.255 area 0
+network 30.0.0.0 0.0.0.3 area 0
+exit
+
+
+
+@California
+
+
+en
+config t
+int Fa0/0
+ip add 192.168.56.1 255.255.254.0
+no shut
+ip dhcp pool California
+network 192.168.56.0 255.255.254.0
+default-router 192.168.56.1
+dns-server 192.168.56.38
+ip dhcp excluded-address 192.168.56.14 192.168.56.38
+
+
+
+en
+config t
+int Se3/0
+ip add 20.0.0.1 255.255.255.252
+no shut
+exit
+int Se2/0
+ip add 10.0.0.1 255.255.255.252
+no shut
+exit
+int Fa1/0
+ip add 50.0.0.1 255.255.255.252
+no shut
+exit
+
+
+__________________Routing________________
+
+
+en
+config t
+router ospf 1
+network 192.168.56.0 0.0.1.255 area 0
+network 20.0.0.0 0.0.0.3 area 0
+network 10.0.0.0 0.0.0.3 area 0
+network 50.0.0.0 0.0.0.3 area 0
+exit
+
+
+
+
+@Lisbon
+
+
+en
+config t
+int Fa0/0
+ip add 192.168.58.1 255.255.255.0
+no shut
+ip dhcp pool Lisbon
+network 192.168.58.0 255.255.255.0
+default-router 192.168.58.1
+dns-server 192.168.58.38
+ip dhcp excluded-address 192.168.58.14 192.168.58.38
+
+
+
+
+en
+config t
+int Se2/0
+ip add 10.0.0.2 255.255.255.252
+no shut
+exit
+
+
+
+
+
+_____________routing______________
+
+
+en
+config t
+router ospf 1
+network 192.168.58.0 0.0.0.255 area 0
+network 10.0.0.0 0.0.0.3 area 0
+exit
+
+
+
+________________ACL_______________
+
+ip access-list extended Vulnerable_Pc
+deny ip host 192.168.32.3 host 192.168.58.38
+permit ip any any
+exit
+int Fa0/0
+ip access-group Vulnerable_Pc out
+exit
+show access-lists
+                ^
+|---------------------------------------------------------------------
+|    Extended IP access list Vulnerable_Pc                      |
+|  10 deny ip host 192.168.32.3 host 192.168.58.38              |
+|   20 permit ip any any                                        |
+|                                                               |
+|                                                               |
+|--------------------------------------------------------------------
